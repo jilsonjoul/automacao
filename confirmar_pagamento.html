@@ -3,38 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Captura de Parâmetros</title>
-</head>
-<body>
-    <h1>Captura de Parâmetros da URL</h1>
-    <div id="output"></div>
-    
-    <script>
-        // Captura os parâmetros da URL
-		alert("ola");
-		
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentId = urlParams.get("paymentId");
-        const token = urlParams.get("token");
-        const payerId = urlParams.get("PayerID");
+    <title>PayPal Checkout</title>
+   <script src="https://www.paypal.com/sdk/js?client-id=AWMY5_RjDc9Rl7rj_skoVuyARtkFWE0MbGmRSuuwnvLwruyMcyJ5GnMLjqH8gtuvPYZh0ERV2NjowB59&currency=USD"></script>
 
-        // Exibe os parâmetros na página
-        document.getElementById("output").innerHTML = `
-            <p>Payment ID: ${paymentId}</p>
-            <p>Token: ${token}</p>
-            <p>Payer ID: ${payerId}</p>
-        `;
-        
-        // Enviar para um servidor (opcional)
-        /*
-        fetch("https://seuservidor.com/processar_pagamento", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paymentId, token, payerId })
-        }).then(response => response.json())
-          .then(data => console.log("Resposta do servidor:", data))
-          .catch(error => console.error("Erro ao enviar dados:", error));
-        */
-    </script>
+<body>
+
+<h2>Pagamento com PayPal</h2>
+<h3>Tentar pagar</h3>
+<div id="paypal-button-container"></div>
+
+<script>
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: 'USD',
+                        value: '10.00'  // Defina o valor do pagamento aqui
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert('Pagamento realizado com sucesso por ' + details.payer.name.given_name);
+            });
+        },
+        onError: function(err) {
+            console.error('Erro durante o processo de pagamento:', err);
+        }
+    }).render('#paypal-button-container');
+</script>
+
 </body>
 </html>
